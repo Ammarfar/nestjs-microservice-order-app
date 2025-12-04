@@ -20,12 +20,13 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory);
+  SwaggerModule.setup('api/docs', app, documentFactory);
 
   // global interceptors
   app.useGlobalInterceptors(new ResponseInterceptor(), new LogInterceptor());
 
   // API versioning
+  app.setGlobalPrefix('api');
   app.enableVersioning({
     type: VersioningType.URI,
   });
