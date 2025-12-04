@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { SignInDto } from 'src/auth/dto/sign-in.dto';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
@@ -29,6 +30,7 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get('profile')
+  @Throttle({ default: { limit: 1, ttl: 2000 } })
   getProfile(@Request() req) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     return req.user;
