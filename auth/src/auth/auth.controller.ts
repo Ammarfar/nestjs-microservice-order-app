@@ -13,7 +13,10 @@ import { SignInDto } from 'src/auth/dto/sign-in.dto';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 
-@Controller('auth')
+@Controller({
+  path: 'auth',
+  version: '1',
+})
 export class AuthController {
   constructor(private authService: AuthService) {}
 

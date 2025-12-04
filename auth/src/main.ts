@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -24,6 +24,11 @@ async function bootstrap() {
 
   // global interceptors
   app.useGlobalInterceptors(new ResponseInterceptor(), new LogInterceptor());
+
+  // API versioning
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
 
   await app.listen(appConstants.APP_PORT);
 }
