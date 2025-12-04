@@ -13,7 +13,6 @@ import { AuthService } from './auth.service';
       secret: appConstants.JWT_SECRET,
       signOptions: { expiresIn: '15m' },
     }),
-    AuthModule,
   ],
   providers: [AuthService],
   controllers: [AuthController],
