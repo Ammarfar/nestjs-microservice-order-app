@@ -18,7 +18,7 @@ export class OrderController {
   @Post()
   @Throttle({ default: { limit: 1, ttl: 2000 } })
   createOrder(@Body() body: CreateOrderDto, @Req() req: { user: User }) {
-    this.orderService.emit('order.created', {
+    this.orderService.emit('gateway.order.created', {
       ...body,
       userId: req.user.userId,
     });
