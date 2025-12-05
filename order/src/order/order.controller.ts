@@ -1,15 +1,14 @@
-import { Controller, Inject } from '@nestjs/common';
-import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
+import { Controller } from '@nestjs/common';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { OrderService } from './order.service';
 
 @Controller()
 export class OrderController {
-  constructor(
-    @Inject('INVENTORY_SERVICE') private inventoryService: ClientProxy,
-  ) {}
+  constructor(private readonly orderService: OrderService) {}
 
   @EventPattern('gateway.order.created')
-  handleCheckInventory(@Payload() payload: CreateOrderDto) {
-    this.inventoryService.emit('order.created', payload);
+  createOrder(@Payload() payload: CreateOrderDto) {
+    this.orderService.createOrder(payload);
   }
 }
