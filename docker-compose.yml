@@ -1,0 +1,75 @@
+version: "3"
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+    networks:
+      - order
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  auth-service:
+    command: sh -c "sleep 12 && node dist/main.js"
+    build:
+      context: ./auth
+      dockerfile: dockerfile.dev
+    restart: on-failure
+    env_file: ./auth/.env.docker
+    ports:
+      - '3000:3000'
+    networks:
+      - order
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  order-service:
+    command: sh -c "sleep 9 && node dist/main.js"
+    build:
+      context: ./order
+      dockerfile: dockerfile.dev
+    restart: on-failure
+    env_file: ./order/.env.docker
+    networks:
+      - order
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  inventory-service:
+    command: sh -c "sleep 6 && node dist/main.js"
+    build:
+      context: ./inventory
+      dockerfile: dockerfile.dev
+    restart: on-failure
+    env_file: ./inventory/.env.docker
+    networks:
+      - order
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  notification-service:
+    command: sh -c "sleep 3 && node dist/main.js"
+    build:
+      context: ./notification
+      dockerfile: dockerfile.dev
+    restart: on-failure
+    env_file: ./notification/.env.docker
+    networks:
+      - order
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+networks:
+  order:
+    driver: bridge
+volumes:
+  rabbit_data:
+    driver: local
