@@ -29,7 +29,10 @@ https://github.com/Ammarfar/nestjs-microservice-order-app
 cd nestjs-microservice-order-app
 docker-compose up --build
 ```
-### 3. **Here the static data provided**
+### 3 Open API Documentation
+- Access Swagger documentation through `http://localhost:3000/api/docs`
+### 4. Static Data for Testing
+- Includes hard-coded test data used during development; no database records are involved.
 ```javascript
 // USERS
 {
