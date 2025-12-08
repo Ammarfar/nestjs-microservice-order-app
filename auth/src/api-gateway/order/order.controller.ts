@@ -1,8 +1,9 @@
-import { Body, Controller, Inject, Post, Req, UseGuards } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { appConstants } from 'src/constants';
 import { User } from 'src/users/users.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 
@@ -11,17 +12,21 @@ import { CreateOrderDto } from './dto/create-order.dto';
   version: '1',
 })
 export class OrderController {
-  constructor(@Inject('ORDER_SERVICE') private orderService: ClientProxy) {}
+  constructor(private readonly amqpConnection: AmqpConnection) {}
 
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @Post()
   @Throttle({ default: { limit: 1, ttl: 2000 } })
   createOrder(@Body() body: CreateOrderDto, @Req() req: { user: User }) {
-    this.orderService.emit('gateway.order.created', {
-      ...body,
-      userId: req.user.userId,
-    });
+    void this.amqpConnection.publish(
+      appConstants.RMQ_EXCHANGE,
+      'gateway.order.created',
+      {
+        ...body,
+        userId: req.user.userId,
+      },
+    );
 
     return 'Order has been created!';
   }

@@ -1,5 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { AmqpConnection, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { Injectable } from '@nestjs/common';
+import { appConstants } from 'src/constants';
 import { CreateOrderDto } from './dto/create-order.dto';
 
 export type Inventory = {
@@ -10,9 +11,7 @@ export type Inventory = {
 
 @Injectable()
 export class InventoryService {
-  constructor(
-    @Inject('NOTIFICATION_SERVICE') private notificationService: ClientProxy,
-  ) {}
+  constructor(private readonly amqpConnection: AmqpConnection) {}
 
   private readonly inventories: Inventory[] = [
     {
@@ -27,6 +26,11 @@ export class InventoryService {
     },
   ];
 
+  @RabbitSubscribe({
+    exchange: appConstants.RMQ_EXCHANGE,
+    routingKey: 'order.created',
+    queue: appConstants.RMQ_ORDER_QUEUE,
+  })
   createOrder(payload: CreateOrderDto): void {
     try {
       // get item and deduct stock if available
@@ -34,10 +38,14 @@ export class InventoryService {
       item.stock -= payload.quantity;
 
       // publish inventory.updated event
-      this.notificationService.emit('inventory.updated', {
-        ...item,
-        userId: payload.userId,
-      });
+      void this.amqpConnection.publish(
+        appConstants.RMQ_EXCHANGE,
+        'inventory.updated',
+        {
+          ...item,
+          userId: payload.userId,
+        },
+      );
     } catch (error) {
       // publish inventory.failed event
 

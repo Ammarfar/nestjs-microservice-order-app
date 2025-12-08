@@ -1,23 +1,21 @@
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { appConstants } from 'src/constants';
-import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'INVENTORY_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          urls: [appConstants.RMQ_URL],
-          queue: appConstants.RMQ_INVENTORY_QUEUE,
+    RabbitMQModule.forRoot({
+      uri: appConstants.RMQ_URL,
+      queues: [
+        {
+          name: appConstants.RMQ_ORDER_QUEUE,
+          exchange: appConstants.RMQ_EXCHANGE,
+          routingKey: ['order.created'],
         },
-      },
-    ]),
+      ],
+    }),
   ],
-  controllers: [OrderController],
   providers: [OrderService],
 })
 export class OrderModule {}
