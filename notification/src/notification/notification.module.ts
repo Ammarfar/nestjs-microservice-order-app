@@ -1,9 +1,14 @@
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
-import { NotificationController } from './notification.controller';
+import { appConstants } from 'src/constants';
 import { NotificationService } from './notification.service';
 
 @Module({
-  controllers: [NotificationController],
+  imports: [
+    RabbitMQModule.forRoot({
+      uri: appConstants.RMQ_URL,
+    }),
+  ],
   providers: [NotificationService],
 })
 export class NotificationModule {}

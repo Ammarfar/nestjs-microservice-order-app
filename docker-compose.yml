@@ -18,7 +18,7 @@ services:
       timeout: 5s
       retries: 5
   auth-service:
-    command: sh -c "sleep 12 && node dist/main.js"
+    command: sh -c "sleep 3 && node dist/main.js"
     build:
       context: ./auth
       dockerfile: dockerfile.dev
@@ -32,7 +32,7 @@ services:
       rabbitmq:
         condition: service_healthy
   order-service:
-    command: sh -c "sleep 9 && node dist/main.js"
+    command: sh -c "sleep 6 && node dist/main.js"
     build:
       context: ./order
       dockerfile: dockerfile.dev
@@ -44,7 +44,7 @@ services:
       rabbitmq:
         condition: service_healthy
   inventory-service:
-    command: sh -c "sleep 6 && node dist/main.js"
+    command: sh -c "sleep 9 && node dist/main.js"
     build:
       context: ./inventory
       dockerfile: dockerfile.dev
@@ -56,7 +56,7 @@ services:
       rabbitmq:
         condition: service_healthy
   notification-service:
-    command: sh -c "sleep 3 && node dist/main.js"
+    command: sh -c "sleep 12 && node dist/main.js"
     build:
       context: ./notification
       dockerfile: dockerfile.dev

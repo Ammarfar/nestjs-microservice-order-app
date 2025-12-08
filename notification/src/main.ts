@@ -1,18 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 import { appConstants } from './constants';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice(AppModule, {
-    transport: Transport.RMQ,
-    options: {
-      urls: [appConstants.RMQ_URL],
-      queue: appConstants.RMQ_NOTIFICATION_QUEUE,
-    },
-  });
+  const app = await NestFactory.create(AppModule);
 
-  await app.listen();
+  await app.listen(appConstants.APP_PORT);
 }
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 bootstrap();
