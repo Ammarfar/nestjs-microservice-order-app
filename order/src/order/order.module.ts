@@ -1,11 +1,18 @@
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
 import { appConstants } from 'src/constants';
+import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
 
 @Module({
   imports: [
     RabbitMQModule.forRoot({
+      exchanges: [
+        {
+          name: appConstants.RMQ_EXCHANGE,
+          type: 'direct',
+        },
+      ],
       uri: appConstants.RMQ_URL,
       queues: [
         {
@@ -17,5 +24,6 @@ import { OrderService } from './order.service';
     }),
   ],
   providers: [OrderService],
+  controllers: [OrderController],
 })
 export class OrderModule {}

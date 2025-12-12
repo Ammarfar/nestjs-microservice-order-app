@@ -38,6 +38,8 @@ services:
       dockerfile: dockerfile.dev
     restart: on-failure
     env_file: ./order/.env.docker
+    ports:
+      - '3001:3001'
     networks:
       - order
     depends_on:

@@ -1,4 +1,4 @@
-import { AmqpConnection, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { appConstants } from 'src/constants';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -7,11 +7,6 @@ import { CreateOrderDto } from './dto/create-order.dto';
 export class OrderService {
   constructor(private readonly amqpConnection: AmqpConnection) {}
 
-  @RabbitSubscribe({
-    exchange: appConstants.RMQ_EXCHANGE,
-    routingKey: 'gateway.order.created',
-    queue: appConstants.RMQ_GATEWAY_QUEUE,
-  })
   createOrder(payload: CreateOrderDto) {
     // optionally save to db
     // this.orderRepository.save(payload);
